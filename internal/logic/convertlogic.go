@@ -43,13 +43,13 @@ func (l *ConvertLogic) Convert(req *types.ConvertRequest) (resp *types.ConvertRe
 		if err == nil {
 			return nil, fmt.Errorf("长链接已被转换为%s", u.Surl.String)
 		}
-		logx.Errorw("ShortUrlModel.FindOneByMD5 failed", logx.LogFields{Key:"err", Value: err})
+		logx.Errorw("ShortUrlModel.FindOneByMD5 failed", logx.Fields{Key:"err", Value: err})
 		return nil, err
 	}
 	// 1.4 不是被使用过的短链接
 	basePath, err := urltool.GetBasePath(req.LongUrl)
 	if err == nil {
-		logx.Errorw("urltool.GetBasePath failed", logx.LogFields{Key:"lurl", Value: LongUrl})
+		logx.Errorw("urltool.GetBasePath failed", logx.Fields{Key:"lurl", Value: LongUrl})
 		return nil, err
 	}
 	_, err := l.svcCtx.ShortUrlModel.FindOneBySurl(l.ctx, sql.NullString{String: basePath, Valid: true})
@@ -57,7 +57,7 @@ func (l *ConvertLogic) Convert(req *types.ConvertRequest) (resp *types.ConvertRe
 		if err == nil {
 			return nil, errors.New("长链接已被转换为短链接")
 		}
-		logx.Errorw("ShortUrlModel.FindOneBySurl failed", logx.LogFields{Key:"err", Value: err})
+		logx.Errorw("ShortUrlModel.FindOneBySurl failed", logx.Fields{Key:"err", Value: err})
 		return nil, err
 	}
 	// 2. 取号
