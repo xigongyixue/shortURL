@@ -2,6 +2,7 @@ package md5
 
 import (
 	"crypto/md5"
+	"encoding/hex"
 )
 
 // Sum 计算字符串的md5值
