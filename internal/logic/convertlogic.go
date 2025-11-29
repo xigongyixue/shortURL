@@ -11,9 +11,11 @@ import (
 
 	"shortURL/internal/svc"
 	"shortURL/internal/types"
+	"shortURL/model"
 	"shortURL/pkg/connect"
 	"shortURL/pkg/md5"
 	"shortURL/pkg/urltool"
+	"shortURL/pkg/base62"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -72,8 +74,29 @@ func (l *ConvertLogic) Convert(req *types.ConvertRequest) (resp *types.ConvertRe
 	}
 	fmt.Println(seq)
 	// 3. 号码转短链
+	// 3.1 安全性
+	// 3.2 特殊词
+	short := base62.Int2String(seq)
+	for _, v := range l.svcCtx.Config.ShortUrlBlackList {
+		if v == short {
+			seq++
+			short = base62.Int2String(seq)
+		}
+	}
+	fmt.Printf("short: %v\n", short)
 	// 4. 存储映射关系
+	if _, err := l.svcCtx.ShortUrlModel.Insert(
+		l.ctx,
+		&model.ShortUrlMap{
+			Lurl: sql.NullString{String: req.LongUrl, Valid: true},
+			Surl: sql.NullString{String: short, Valid: true},
+			Md5:  sql.NullString{String: md5Value, Valid: true},
+		},
+	); err != nil {
+		logx.Errorw("ShortUrlModel.Insert failed", logx.LogField{Key:"err", Value: err.Error()})
+		return nil, err
+	}
 	// 5. 返回结果
-
-	return
+	shortUrl := l.svcCtx.Config.ShortDomain + "/" + short
+	return &types.ConvertResponse{ShortUrl: shortUrl}, nil
 }

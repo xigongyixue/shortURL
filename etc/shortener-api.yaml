@@ -7,3 +7,7 @@ ShortUrlDB:
 
 Sequence:
   DSN: "cc:123@tcp(127.0.0.1:3306)/url?charset=utf8mb4&parseTime=True&loc=Asia%2FShanghai"
+
+ShortUrlBlackList: ["version", "fuck", "shit", "bitch", "api"]
+
+ShortDomain: "cc.com"
