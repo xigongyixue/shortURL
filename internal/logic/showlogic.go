@@ -5,6 +5,8 @@ package logic
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 
 	"shortURL/internal/svc"
 	"shortURL/internal/types"
@@ -26,8 +28,15 @@ func NewShowLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ShowLogic {
 	}
 }
 
+// 短链接->长链接
 func (l *ShowLogic) Show(req *types.ShowRequest) (resp *types.ShowResponse, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+	u, err := l.svcCtx.ShortUrlModel.FindOneBySurl(l.ctx, sql.NullString{Valid: true, String: req.ShortUrl})
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.New("404")
+		}
+		logx.Errorw("ShortUrlModel.FindOneBySurl failed", logx.LogField{Value: err.Error(), Key: "error"})
+		return nil, err
+	}
+	return &types.ShowResponse{LongUrl: u.Lurl.String}, nil
 }

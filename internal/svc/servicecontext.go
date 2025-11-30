@@ -21,7 +21,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	conn := sqlx.NewMysql(c.ShortUrlDB.DSN)
 	return &ServiceContext{
 		Config: c,
-		ShortUrlModel: model.NewShortUrlMapModel(conn),
+		ShortUrlModel: model.NewShortUrlMapModel(conn, c.CacheRedis),
 		Sequence: sequence.NewMysql(c.Sequence.DSN),
 	}
 }

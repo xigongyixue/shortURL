@@ -11,3 +11,6 @@ Sequence:
 ShortUrlBlackList: ["version", "fuck", "shit", "bitch", "api"]
 
 ShortDomain: "cc.com"
+
+CacheRedis:
+  - Host: 127.0.0.1:6379
